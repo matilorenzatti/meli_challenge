@@ -2,33 +2,33 @@
 # 📁 ARCHIVOS PARTICULARES DE ESTE PROYECTO
 ############################################
 
-data/1_bronze/*
-!data/1_bronze/.gitkeep
+data/o1_bronze/*
+!data/o1_bronze/.gitkeep
 
-data/2_silver/*
-!data/2_silver/.gitkeep
+data/o2_silver/*
+!data/o2_silver/.gitkeep
 
-data/3_gold/*
-!data/3_gold/.gitkeep
+data/o3_gold/*
+!data/o3_gold/.gitkeep
 
-data/4_external/*
-!data/4_external/.gitkeep
+data/o4_external/*
+!data/o4_external/.gitkeep
 
 # Logs por etapa
-logs/1_extraction_logs/*
-!logs/1_extraction_logs/.gitkeep
+logs/o1_extraction_logs/*
+!logs/o1_extraction_logs/.gitkeep
 
-logs/2_cleaning_logs/*
-!logs/2_cleaning_logs/.gitkeep
+logs/o2_cleaning_logs/*
+!logs/o2_cleaning_logs/.gitkeep
 
-logs/3_transformation_logs/*
-!logs/3_transformation_logs/.gitkeep
+logs/o3_transformation_logs/*
+!logs/o3_transformation_logs/.gitkeep
 
-logs/4_modeling_logs/*
-!logs/4_modeling_logs/.gitkeep
+logs/o4_modeling_logs/*
+!logs/o4_modeling_logs/.gitkeep
 
-logs/5_serving_logs/*
-!logs/5_serving_logs/.gitkeep
+logs/o5_serving_logs/*
+!logs/o5_serving_logs/.gitkeep
 
 logs/utils_logs/*
 !logs/utils_logs/.gitkeep

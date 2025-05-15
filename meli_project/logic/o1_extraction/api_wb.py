@@ -17,7 +17,7 @@ class DataWB:
         base_url = "https://data360api.worldbank.org/data360/data"
     ):
         """
-
+        Parametros genericos y basicos para iniciar la clase sin problemas.
 
         """
 
@@ -85,7 +85,7 @@ class DataWB:
             "Accept": "application/json"
         }
 
-        logger.info(f"INICIANDO descarga del indicador {indicator} a la API del WB")
+        logger.info(f"INICIANDO descarga del indicador {indicator}-{self.ref_area} a la API del WB")
 
         response = requests.get(self.base_url, params=params, headers=headers)
 
@@ -104,7 +104,7 @@ class DataWB:
 
             # Registramos el log en caso de estar todo ok para tener un control
 
-            logger.info(f"✅ FIN de la petición: indicador {indicator} descargado correctamente.")
+            logger.info(f"✅ FIN de la petición: indicador {indicator}-{self.ref_area} descargado correctamente.")
 
 
             return f"✅ JSON guardado correctamente en {output_path}"
@@ -112,13 +112,50 @@ class DataWB:
         else:
 
             # Registramos log en caso de error para saber que sucedio
-            logger.error(f"❌ FIN con error: indicador {indicator}. Código {response.status_code}")
+            logger.error(f"❌ FIN con error: indicador {indicator}-{self.ref_area}. Código {response.status_code}")
 
             return f"❌ Error {response.status_code}: {response.text}"
 
 
 
-    def obtener_all_data(self):
+
+    def obtener_lista_indicadores_disponibles(self, dataset_id="ITU_DH"):
+
+        """
+        Consulta la API del Banco Mundial y devuelve la lista de indicadores disponibles
+        para un dataset específico (por defecto ITU_DH).
+        """
+
+        logger = setup_logger('o1_extraction_logs/API_WB/listado_indicadores_disponibles.log')
+
+        url = "https://data360api.worldbank.org/data360/indicators"
+
+        params = {"datasetId": dataset_id}
+
+        logger.info(f"INICIO consulta de indicadores para {dataset_id}")
+
+        try:
+            response = requests.get(url, params=params)
+
+            if response.status_code == 200:
+
+                indicadores = response.json()
+
+                logger.info(f"FIN consulta. ✅ {len(indicadores)} indicadores disponibles para el dataset {dataset_id}.")
+                return indicadores
+
+            else:
+                logger.error(f"FIN consulta. ❌ Error al consultar indicadores. Código: {response.status_code}")
+                return []
+
+        except Exception as e:
+            logger.critical(f"Error inesperado al obtener indicadores: {e}")
+            return []
+
+
+
+
+    def obtener_all_data(self,indicadores: list = None):
 
         """
         Descarga todos los indicadores definidos y guarda su resultado como JSON.
@@ -127,31 +164,11 @@ class DataWB:
 
         logger = setup_logger('o1_extraction_logs/API_WB/0_todos_indicadores.log')
 
-        indicadores = [
-            # Acceso y uso de Internet
-            "ITU_DH_HH_INT",
-            "ITU_DH_INT_USR_DAY",
-            "ITU_DH_INT_USR_WKL",
-            "ITU_DH_INT_USR_MON",
+        if (indicadores is None) or (not isinstance(indicadores,list)):
+            indicadores = self.obtener_lista_indicadores_disponibles()
 
-            # Infraestructura y conectividad
-            "ITU_DH_INT_CONN_BAND_MBIT",
-            "ITU_DH_INT_CONN_BAND_CAP",
-            "ITU_DH_POP_COV_4G",
-            "ITU_DH_POP_COV_5G",
 
-            # Adopción tecnológica
-            "ITU_DH_HH_COMP",
-            "ITU_DH_ACT_MOB_PER_100",
-            "ITU_DH_MOB_SUB_PER_100",
-
-            # Habilidades digitales
-            "ITU_DH_SKLS_SFTY",
-            "ITU_DH_SKLS_INF_DATA",
-            "ITU_DH_SKLS_DIG_CONT"
-        ]
-
-        logger.info("INICIO de extracción masiva de indicadores del Banco Mundial")
+        logger.info(f"{self.ref_area} - INICIO de extracción masiva de indicadores del Banco Mundial")
 
         descargados_ok = []
         errores = []
@@ -172,9 +189,10 @@ class DataWB:
 
 
         # Log final con resumen
-        logger.info("FIN Proceso de descarga")
+
         logger.info(f"✅ Indicadores descargados correctamente: {len(descargados_ok)}")
         logger.info(f"❌ Indicadores con error: {len(errores)}")
+        logger.info(f"{self.ref_area} - FIN Proceso de descarga")
 
         if errores:
             logger.warning(f"⚠️ Indicadores fallidos: {errores}")

@@ -1,6 +1,7 @@
 import os
 import json
 import pandas as pd
+import pickle
 from meli_project.logic.utils.utils import *
 
 
@@ -29,7 +30,7 @@ class DFsWB:
 
         for file in os.listdir(self.bronze_path):
 
-            if file.endswith(".json"):
+            if file.endswith("_ARG.json"):
                 path = os.path.join(self.bronze_path, file)
 
                 try:
@@ -49,7 +50,28 @@ class DFsWB:
 
                     logger.error(f"❌ Error al leer el archivo {file}: {e}")
 
-        logger.info("FIN listado de JSON's validos")
+
+
+
+        bronze_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../../data/o1_bronze")
+        )
+
+         # Definimos el nombre del archivo JSON
+        file_name = f"jsons_validos_ARG.pickle"
+
+        # Definimos el path
+        output_path = os.path.join(bronze_path, file_name)
+
+        try:
+            # Guardamos los archivos validos en un pickle para utilizarlo luego
+            with open(output_path,"wb") as f:
+                pickle.dump(archivos_validos, f)
+
+            logger.info("FIN. Listado de JSON's validos guardados como PICKLE.")
+
+        except Exception as e:
+            logger.error(f"FIN. Error al guardar el listado como PICKLE. Error: {e}")
 
         return archivos_validos
 
@@ -93,6 +115,8 @@ class DFsWB:
             return pd.DataFrame()
 
 
+
+
     def obtener_todos_df(self):
         """
         Convierte todos los JSON válidos en un diccionario de DataFrames.
@@ -107,6 +131,7 @@ class DFsWB:
 
         try:
             archivos = self.listar_jsons_validos()
+            archivos.extend(cargar_paths_wld_desde_arg())
 
             for path in archivos:
 
@@ -118,7 +143,7 @@ class DFsWB:
                     dfs[nombre] = df
                     logger.info(f"✅ Archivo {nombre} convertido a DF.")
                 else:
-                    self.logger.warning(f"⚠️ No se generó DataFrame para: {nombre}")
+                    logger.warning(f"⚠️ No se generó DataFrame para: {nombre}")
 
             logger.info(f"FIN conversión de JSONs. Total de DataFrames generados: {len(dfs)}")
 

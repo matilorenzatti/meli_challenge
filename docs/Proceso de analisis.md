@@ -145,3 +145,15 @@ Estos indicadores seleccionados permiten construir un dashboard que refleje:
 Este conjunto de métricas es suficiente para analizar **cómo ha evolucionado el acceso a Internet**, qué **factores técnicos y materiales lo han permitido**, y cómo varió la **penetración tecnológica** en el tiempo.
 
 Podemos complementar estos indicadores con variables sociodemográficas externas (por ejemplo, del INDEC), si deseamos enriquecer el análisis de causalidad o segmentación.
+
+---
+
+---
+
+# IMPORTANTE -> HUBIERON CAMBIOS :):
+
+Hubieron varios cambios en la forma de resolver el ejercicio, a medida que avance y pude conocer mas los datos, acalrar mi cabeza y entender que sucede por detras, modifique mi pensamiento y cree un nuevo MARKDOWN donde explico esto a mayor detalle y digo cual es mi conclusion final sobre como voy a resolver el challenge.
+
+Los espero en el otro MD
+
+Saludos :)
