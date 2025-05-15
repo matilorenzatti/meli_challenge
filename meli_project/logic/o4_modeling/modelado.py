@@ -3,7 +3,6 @@ import pandas as pd
 
 
 
-
 class ModeladorWB:
 
     """

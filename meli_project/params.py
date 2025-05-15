@@ -9,8 +9,7 @@ load_dotenv(override=True)
 
 ##################  VARIABLES  ##################
 
-API_KEY_KOMMO = os.environ.get('API_KEY_KOMMO')
-SUBDOMINIO_KOMMO = os.environ.get('SUBDOMINIO_KOMMO')
+GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 
 
 ##################  PATHS  ##################
