@@ -102,7 +102,7 @@ class ModeladorWB:
 
 
 
-    def crear_tabla_hechos(self, df, d_time, d_area):
+    def crear_tabla_hechos(self, df, d_time, d_area, d_indicadores):
 
         f = df[["OBS_VALUE", "TIME_PERIOD", "REF_AREA", "INDICATOR"]].copy()
 
@@ -110,9 +110,10 @@ class ModeladorWB:
 
         f = f.merge(d_area, on="REF_AREA", how="left")
 
-        f = f.rename(columns={"INDICATOR": "indicator_id"})
+        f = f.merge(d_indicadores, on="INDICATOR", how="left")
 
-        return f[["OBS_VALUE", "time_id", "area_id", "indicator_id"]]
+
+        return f[["time_id", "area_id", "indicator_id", "OBS_VALUE"]]
 
 
 
@@ -168,12 +169,14 @@ class ModeladorWB:
             d_indicadores = self.crear_tabla_dim_indicadores(df_master)
             logger.info(f"✅ Tabla 'd_indicadores' creada con {len(d_indicadores)} registros.")
 
-            f_valores = self.crear_tabla_hechos(df_master, d_time, d_area)
+            f_valores = self.crear_tabla_hechos(df_master, d_time, d_area, d_indicadores)
             logger.info(f"✅ Tabla de hechos 'f_valores' creada con {len(f_valores)} registros.")
+
 
         except Exception as e:
             logger.error(f"FIN pipeline. ❌ Error durante la creación de las tablas: {e}")
             return f"❌ Error durante el procesamiento: {e}"
+
 
 
         # Guardar todas las tablas
@@ -193,5 +196,7 @@ class ModeladorWB:
             else:
                 logger.error(resultado)
 
+
         logger.info("FIN PIPELINE. 🎯 Modelo dimensional generado y guardado correctamente.")
+
         return "✅ Modelo dimensional generado y guardado correctamente."
