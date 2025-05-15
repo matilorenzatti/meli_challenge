@@ -1,0 +1,183 @@
+import os
+import json
+import requests
+import pandas as pd
+from meli_project.logic.utils.utils import *
+
+
+
+class DataWB:
+
+
+    # Definimos el metodo INIT (constructor) con los parametros comunes a usar
+    def __init__(
+        self,
+        database_id = "ITU_DH",
+        ref_area= "ARG",
+        base_url = "https://data360api.worldbank.org/data360/data"
+    ):
+        """
+
+
+        """
+
+        self.base_url = base_url
+        self.database_id = database_id
+        self.ref_area = ref_area
+
+
+
+        # Ruta absoluta a /data/1_bronze, no se hardcodea, sino que usamos OS
+
+        self.bronze_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../../data/1_bronze")
+        )
+
+        # Creo la carpeta en caso de no estar creada, controlo errores con el exist_ok
+        os.makedirs(self.bronze_path, exist_ok=True)
+
+
+
+    def get_params(self, indicator, **kwargs):
+
+        """Armar el diccionario de parámetros segun que parametros necesitemos usar.
+        """
+
+        params = {
+            "DATABASE_ID": self.database_id,
+            "INDICATOR": indicator,
+            "REF_AREA": self.ref_area,
+        }
+
+
+        opcionales = {
+            "SEX": kwargs.get("sex"),
+            "AGE": kwargs.get("age"),
+            "URBANISATION": kwargs.get("urbanisation"),
+            "COMP_BREAKDOWN_1": kwargs.get("comp_breakdown_1"),
+            "COMP_BREAKDOWN_2": kwargs.get("comp_breakdown_2"),
+            "COMP_BREAKDOWN_3": kwargs.get("comp_breakdown_3"),
+            "timePeriodFrom": kwargs.get("time_from"),
+            "timePeriodTo": kwargs.get("time_to"),
+            "FREQ": kwargs.get("freq"),
+            "UNIT_MEASURE": kwargs.get("unit_measure"),
+            "UNIT_TYPE": kwargs.get("unit_type"),
+            "UNIT_MULT": kwargs.get("unit_mult"),
+        }
+
+        for k, v in opcionales.items():
+            if v is not None:
+                params[k] = v
+
+        return params
+
+
+
+    def obtener_json(self, indicator, **kwargs):
+
+        """Realiza la consulta a la API y guarda el resultado como JSON en la carpeta bronze."""
+
+        logger = setup_logger(f'1_extraction_logs/API_WB/{indicator}.log')
+
+        params = self.get_params(indicator, **kwargs)
+
+        headers = {
+            "Accept": "application/json"
+        }
+
+        logger.info(f"INICIANDO descarga del indicador {indicator} a la API del WB")
+
+        response = requests.get(self.base_url, params=params, headers=headers)
+
+
+        if response.status_code == 200:
+
+            # Definimos el nombre del archivo JSON
+            file_name = f"{indicator}_{self.ref_area}.json"
+
+            # Definimos el path
+            output_path = os.path.join(self.bronze_path, file_name)
+
+            # Guardamos el JSON en la carpeta bronze, para traer la fuente tal cual la obtenemos
+            with open(output_path, "w", encoding="utf-8") as f:
+                json.dump(response.json(), f, indent=4, ensure_ascii=False)
+
+            # Registramos el log en caso de estar todo ok para tener un control
+
+            logger.info(f"✅ FIN de la petición: indicador {indicator} descargado correctamente.")
+
+
+            return f"✅ JSON guardado correctamente en {output_path}"
+
+        else:
+
+            # Registramos log en caso de error para saber que sucedio
+            logger.error(f"❌ FIN con error: indicador {indicator}. Código {response.status_code}")
+
+            return f"❌ Error {response.status_code}: {response.text}"
+
+
+
+    def obtener_all_data(self):
+
+        """
+        Descarga todos los indicadores definidos y guarda su resultado como JSON.
+        Registra un log general del proceso.
+        """
+
+        logger = setup_logger('1_extraction_logs/API_WB/0_todos_indicadores.log')
+
+        indicadores = [
+            # Acceso y uso de Internet
+            "ITU_DH_HH_INT",
+            "ITU_DH_INT_USR_DAY",
+            "ITU_DH_INT_USR_WKL",
+            "ITU_DH_INT_USR_MON",
+
+            # Infraestructura y conectividad
+            "ITU_DH_INT_CONN_BAND_MBIT",
+            "ITU_DH_INT_CONN_BAND_CAP",
+            "ITU_DH_POP_COV_4G",
+            "ITU_DH_POP_COV_5G",
+
+            # Adopción tecnológica
+            "ITU_DH_HH_COMP",
+            "ITU_DH_ACT_MOB_PER_100",
+            "ITU_DH_MOB_SUB_PER_100",
+
+            # Habilidades digitales
+            "ITU_DH_SKLS_SFTY",
+            "ITU_DH_SKLS_INF_DATA",
+            "ITU_DH_SKLS_DIG_CONT"
+        ]
+
+        logger.info("INICIO de extracción masiva de indicadores del Banco Mundial")
+
+        descargados_ok = []
+        errores = []
+
+        for ind in indicadores:
+
+            try:
+                resultado = self.obtener_json(ind)
+
+                if resultado.startswith("✅"):
+                    descargados_ok.append(ind)
+                else:
+                    errores.append(ind)
+
+            except Exception as e:
+                errores.append(ind)
+                logger.error(f"❌ Excepción inesperada al descargar {ind}: {e}")
+
+
+        # Log final con resumen
+        logger.info("FIN Proceso de descarga")
+        logger.info(f"✅ Indicadores descargados correctamente: {len(descargados_ok)}")
+        logger.info(f"❌ Indicadores con error: {len(errores)}")
+
+        if errores:
+            logger.warning(f"⚠️ Indicadores fallidos: {errores}")
+            return f"❌ Error: No se pudieron extraer todos los indicadores. Fallaron {len(errores)} de {len(indicadores)}."
+        else:
+            return f"✅ Todos los {len(indicadores)} indicadores fueron extraídos correctamente."
