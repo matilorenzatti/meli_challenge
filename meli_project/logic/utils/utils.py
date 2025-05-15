@@ -1,7 +1,7 @@
 import os
 import logging
 import pickle
-
+import pandas as pd
 
 
 # directory = os.path.dirname(os.path.abspath(__file__))
@@ -102,3 +102,74 @@ def cargar_paths_wld_desde_arg():
 
     except Exception as e:
         return []
+
+
+
+
+def cargar_todos_df_silver():
+    """
+    Carga todos los archivos .parquet de la capa silver (data/o2_silver)
+    y los devuelve como un diccionario de DataFrames o errores.
+
+    Retorna:
+    - dict: {nombre_archivo_sin_extension: DataFrame | None}
+    """
+    dfs = {}
+
+    silver_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../data/o2_silver")
+    )
+
+    if not os.path.exists(silver_path):
+        return dfs  # Devuelve diccionario vacío si la carpeta no existe
+
+    for file in os.listdir(silver_path):
+
+        if file.endswith(".parquet"):
+
+            nombre = os.path.splitext(file)[0]
+
+            file_path = os.path.join(silver_path, file)
+
+            try:
+                dfs[nombre] = pd.read_parquet(file_path)
+
+            except Exception as e:
+
+                # Guardamos None o el mensaje de error, según lo prefieras
+                dfs[nombre] = f"Error al cargar: {e}"
+
+    return dfs
+
+
+
+
+def cargar_df_silver(nombre_archivo: str):
+    """
+    Carga un archivo .parquet específico desde la capa silver.
+
+    Parámetros:
+    - nombre_archivo (str): Nombre del archivo .parquet (ej: 'df_conectividad_arg.parquet')
+
+    Retorna:
+    - pd.DataFrame: El DataFrame cargado desde el archivo.
+    """
+
+    silver_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../data/o2_silver")
+    )
+
+    file_path = os.path.join(silver_path, nombre_archivo)
+
+    if os.path.exists(file_path):
+
+        try:
+            return pd.read_parquet(file_path)
+
+        except Exception as e:
+
+            return f"❌ Error al cargar {nombre_archivo}: {e}"
+
+    else:
+
+        return f"⚠️ El archivo '{nombre_archivo}' no existe en la carpeta silver."
