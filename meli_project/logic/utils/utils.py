@@ -173,3 +173,42 @@ def cargar_df_silver(nombre_archivo: str):
     else:
 
         return f"⚠️ El archivo '{nombre_archivo}' no existe en la carpeta silver."
+
+
+
+
+
+def cargar_df_master_gold(nombre_archivo: str = "df_master.parquet") -> pd.DataFrame:
+
+    """
+    Carga el archivo maestro unificado desde la capa gold.
+
+    Parámetros:
+    - nombre_archivo (str): Nombre del archivo .parquet a cargar. Por defecto, 'df_master.parquet'.
+
+    Retorna:
+    - pd.DataFrame: DataFrame cargado desde la capa gold.
+    - En caso de error, devuelve un DataFrame vacío.
+    """
+
+    # Ruta absoluta a la carpeta gold
+    gold_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../data/o3_gold")
+    )
+
+    file_path = os.path.join(gold_path, nombre_archivo)
+
+
+    if os.path.exists(file_path):
+
+        try:
+            return pd.read_parquet(file_path)
+
+
+        except Exception as e:
+
+            return f"❌ Error al cargar el archivo '{nombre_archivo}': {e}"
+
+    else:
+
+        return f"⚠️ El archivo '{nombre_archivo}' no existe en la carpeta gold."
