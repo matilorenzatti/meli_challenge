@@ -86,3 +86,62 @@ Esta selección de indicadores abarca las **cuatro dimensiones clave** que expli
 Combinando estos datos será posible construir un dashboard sólido, comparativo y explicativo, que no solo muestre **qué está pasando** con la conectividad en Argentina, sino que también aporte pistas sobre **por qué** sucede.
 
 ---
+
+---
+
+## ❌ Indicadores descartados por falta de datos para Argentina
+
+Durante la extracción de datos de la base `ITU_DH` para el país `ARG`, varios indicadores devolvieron un `count = 0` (es decir, no se encontraron registros disponibles). Estos indicadores fueron:
+
+- `ITU_DH_ACT_MOB_PER_100`
+- `ITU_DH_INT_CONN_BAND_CAP`
+- `ITU_DH_INT_USR_DAY`
+- `ITU_DH_INT_USR_WKL`
+- `ITU_DH_INT_USR_MON`
+- `ITU_DH_POP_COV_5G`
+- `ITU_DH_SKLS_DIG_CONT`
+- `ITU_DH_SKLS_INF_DATA`
+- `ITU_DH_SKLS_SFTY`
+
+Esto puede deberse a que el indicador **no tiene cobertura histórica para Argentina**, **requiere filtros específicos adicionales (edad, género, etc.)** o simplemente **no fue reportado** por la fuente para este país.
+
+---
+
+## ✅ Indicadores utilizados en el análisis
+
+A partir de la validación previa, los siguientes indicadores **sí devolvieron datos válidos** (`count > 0`) y se utilizarán para el desarrollo del dashboard:
+
+### 📶 Indicadores de acceso a Internet
+
+- `ITU_DH_HH_INT`: **Hogares con acceso a Internet**
+  Permite conocer el grado de conectividad de los hogares argentinos.
+
+### 🌐 Indicadores de infraestructura de red
+
+- `ITU_DH_INT_CONN_BAND_MBIT`: **Ancho de banda internacional (Mbps)**
+  Evalúa la capacidad de infraestructura global de Internet disponible para el país.
+
+- `ITU_DH_POP_COV_4G`: **Cobertura de red 4G**
+  Mide el alcance poblacional de tecnologías móviles avanzadas.
+
+### 💻 Indicadores de adopción tecnológica
+
+- `ITU_DH_HH_COMP`: **Hogares con computadora**
+  Evalúa la penetración de dispositivos necesarios para conectarse.
+
+- `ITU_DH_MOB_SUB_PER_100`: **Suscripciones móviles por cada 100 habitantes**
+  Mide el nivel de adopción de telefonía móvil en la población.
+
+---
+
+## 🧭 Conclusión y aplicación para el dashboard
+
+Estos indicadores seleccionados permiten construir un dashboard que refleje:
+
+- El **nivel de acceso** a Internet en Argentina (`HH_INT`)
+- La **infraestructura técnica** disponible (`INT_CONN_BAND_MBIT`, `POP_COV_4G`)
+- La **adopción tecnológica** en términos de dispositivos y conectividad (`HH_COMP`, `MOB_SUB_PER_100`)
+
+Este conjunto de métricas es suficiente para analizar **cómo ha evolucionado el acceso a Internet**, qué **factores técnicos y materiales lo han permitido**, y cómo varió la **penetración tecnológica** en el tiempo.
+
+Podemos complementar estos indicadores con variables sociodemográficas externas (por ejemplo, del INDEC), si deseamos enriquecer el análisis de causalidad o segmentación.

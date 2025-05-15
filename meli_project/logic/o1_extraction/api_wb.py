@@ -30,7 +30,7 @@ class DataWB:
         # Ruta absoluta a /data/1_bronze, no se hardcodea, sino que usamos OS
 
         self.bronze_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../../data/1_bronze")
+            os.path.join(os.path.dirname(__file__), "../../../data/o1_bronze")
         )
 
         # Creo la carpeta en caso de no estar creada, controlo errores con el exist_ok
@@ -77,7 +77,7 @@ class DataWB:
 
         """Realiza la consulta a la API y guarda el resultado como JSON en la carpeta bronze."""
 
-        logger = setup_logger(f'1_extraction_logs/API_WB/{indicator}.log')
+        logger = setup_logger(f'o1_extraction_logs/API_WB/{indicator}.log')
 
         params = self.get_params(indicator, **kwargs)
 
@@ -125,7 +125,7 @@ class DataWB:
         Registra un log general del proceso.
         """
 
-        logger = setup_logger('1_extraction_logs/API_WB/0_todos_indicadores.log')
+        logger = setup_logger('o1_extraction_logs/API_WB/0_todos_indicadores.log')
 
         indicadores = [
             # Acceso y uso de Internet
