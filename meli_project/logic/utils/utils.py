@@ -374,3 +374,56 @@ diccionario_indicadores_info = {
             "indicator_description": "Número de suscripciones de telefonía fija por cada 100 personas, indicando la penetración del servicio de telefonía fija."
         }
     }
+
+
+
+
+def convertir_parquet_a_csv():
+
+    """
+    Convierte todos los archivos .parquet de la capa gold (data/o3_gold)
+    a archivos .csv y los guarda en la carpeta data/o4_external con el mismo nombre.
+    """
+
+    gold_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../data/o3_gold")
+    )
+
+    external_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../data/o4_external")
+    )
+
+    os.makedirs(external_path, exist_ok=True)
+
+    archivos_convertidos = 0
+
+    for file in os.listdir(gold_path):
+
+        if file.endswith(".parquet"):
+
+            try:
+                parquet_path = os.path.join(gold_path, file)
+                df = pd.read_parquet(parquet_path)
+
+                nombre_csv = file.replace(".parquet", ".csv")
+                csv_path = os.path.join(external_path, nombre_csv)
+
+                df.to_csv(csv_path, index=False)
+
+                archivos_convertidos += 1
+
+
+
+
+            except Exception as e:
+
+                continue
+
+
+    if archivos_convertidos == 0:
+
+        return "⚠️ No se encontraron archivos .parquet en la carpeta gold."
+
+
+    else:
+        return f"🎯 Total archivos convertidos: {archivos_convertidos}"
