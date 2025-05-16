@@ -408,7 +408,7 @@ def convertir_parquet_a_csv():
                 nombre_csv = file.replace(".parquet", ".csv")
                 csv_path = os.path.join(external_path, nombre_csv)
 
-                df.to_csv(csv_path, index=False)
+                df.to_csv(csv_path, index=False, encoding="utf-8-sig", sep=";")
 
                 archivos_convertidos += 1
 
