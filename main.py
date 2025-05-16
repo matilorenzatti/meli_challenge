@@ -98,6 +98,13 @@ def main():
     except Exception as e:
         logger.error(f"❌ Error al subir a BigQuery: {e}")
 
+    try:
+        convertir_parquet_a_csv()
+        logger.info("✅ DF de gold convertidos a CSV con exito.")
+
+    except Exception as e:
+        logger.error(f"❌ Error al convertir los df a CSV: {e}")
+
 
 
     logger.info("FIN PIPELINE ETL finalizado.")
